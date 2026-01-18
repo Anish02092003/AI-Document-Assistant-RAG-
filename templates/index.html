@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RAG Document Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>📄 AI Document Assistant (RAG)</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <label><b>Upload PDF</b></label>
+        <input type="file" name="pdf" accept=".pdf">
+        <button type="submit">Load Document</button>
+    </form>
+
+    {% if ready %}
+    <form method="POST">
+        <label><b>Ask a Question</b></label>
+        <input type="text" name="question" required>
+        <button type="submit">Ask</button>
+    </form>
+    {% endif %}
+
+    {% if answer %}
+        <div class="answer">
+            <b>Answer:</b><br>
+            {{ answer }}
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
