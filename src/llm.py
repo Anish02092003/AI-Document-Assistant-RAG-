@@ -1,19 +1,11 @@
 import subprocess
-import shutil
 
 
 def generate_answer(query, retrieved_chunks):
     """
-    Generate a grounded answer using a LOCAL LLM via Ollama.
+    Calls Ollama running on HOST machine.
+    Windows-safe subprocess handling.
     """
-
-    # Ensure ollama exists
-    ollama_path = shutil.which("ollama")
-    if not ollama_path:
-        raise RuntimeError(
-            "Ollama not found in PATH. "
-            "Please install Ollama and restart your terminal."
-        )
 
     context = "\n\n".join(retrieved_chunks)
 
@@ -33,11 +25,12 @@ ANSWER:
 """
 
     result = subprocess.run(
-        [ollama_path, "run", "mistral"],
+        ["ollama", "run", "mistral"],
         input=prompt,
-        text=True,
         capture_output=True,
-        encoding="utf-8"
+        text=True,
+        encoding="utf-8",   # ✅ force UTF-8 decoding
+        errors="ignore"     # ✅ ignore invalid bytes
     )
 
     if result.returncode != 0:
