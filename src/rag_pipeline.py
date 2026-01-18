@@ -3,13 +3,17 @@ from src.vector_store import VectorStore
 from src.llm import generate_answer
 
 
-def answer_query(query, chunks, embeddings):
+def answer_query(query, chunks, embeddings, history=None):
     """
     Full RAG flow:
     - Embed query
     - Retrieve relevant chunks
     - Generate grounded answer
     """
+    if history:
+     recent_history = "\n".join(history[-6:])
+     query = recent_history + "\nUser: " + query
+
 
     store = VectorStore(embedding_dim=embeddings.shape[1])
     store.add(embeddings, chunks)
