@@ -2,25 +2,54 @@ from src.embeddings import embed_texts
 from src.vector_store import VectorStore
 from src.llm import generate_answer
 
+# -------------------------------
+# Simple in-memory cache
+# -------------------------------
+ANSWER_CACHE = {}
+
+# -------------------------------
+# Vector store (build once)
+# -------------------------------
+VECTOR_STORE = None
+
 
 def answer_query(query, chunks, embeddings, history=None):
     """
     Full RAG flow:
+    - Inject chat history
     - Embed query
     - Retrieve relevant chunks
     - Generate grounded answer
     """
+
+    global VECTOR_STORE
+
+    # ---------- Inject chat history ----------
     if history:
-     recent_history = "\n".join(history[-6:])
-     query = recent_history + "\nUser: " + query
+        recent_history = "\n".join(history[-6:])
+        query = recent_history + "\nUser: " + query
 
+    # ---------- Cache check ----------
+    cache_key = query.lower().strip()
+    if cache_key in ANSWER_CACHE:
+        return ANSWER_CACHE[cache_key]
 
-    store = VectorStore(embedding_dim=embeddings.shape[1])
-    store.add(embeddings, chunks)
+    # ---------- Build vector store ONCE ----------
+    if VECTOR_STORE is None:
+        VECTOR_STORE = VectorStore(embedding_dim=embeddings.shape[1])
+        VECTOR_STORE.add(embeddings, chunks)
 
+    # ---------- Retrieve relevant chunks ----------
     query_embedding = embed_texts([query])
-    retrieved_chunks = store.search(query_embedding, top_k=3)
+    retrieved_chunks = VECTOR_STORE.search(query_embedding, top_k=2)
 
+    # Trim chunks to reduce prompt size
+    retrieved_chunks = [c[:800] for c in retrieved_chunks]
+
+    # ---------- Generate answer ----------
     answer = generate_answer(query, retrieved_chunks)
+
+    # ---------- Cache answer ----------
+    ANSWER_CACHE[cache_key] = answer
 
     return answer
