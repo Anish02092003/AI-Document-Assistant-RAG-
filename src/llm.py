@@ -25,7 +25,7 @@ ANSWER:
 """
 
     result = subprocess.run(
-        ["ollama", "run", "mistral"],
+        ["ollama", "run", "phi3"],
         input=prompt,
         capture_output=True,
         text=True,
