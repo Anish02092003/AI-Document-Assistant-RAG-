@@ -3,7 +3,6 @@ from PyPDF2.errors import PdfReadError
 from pdf2image import convert_from_bytes
 import pytesseract
 
-# Windows path (adjust if needed)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
@@ -14,7 +13,7 @@ def load_pdf(file_bytes):
     - scanned PDFs (OCR fallback)
     """
 
-    # ---------- Try text extraction ----------
+    
     try:
         reader = PyPDF2.PdfReader(file_bytes)
         text = ""
@@ -32,7 +31,7 @@ def load_pdf(file_bytes):
     except Exception:
         pass
 
-    # ---------- OCR fallback ----------
+
     try:
         images = convert_from_bytes(file_bytes.getvalue())
         ocr_text = ""
@@ -47,3 +46,4 @@ def load_pdf(file_bytes):
 
     except Exception:
         raise ValueError("Unable to extract text from PDF")
+
