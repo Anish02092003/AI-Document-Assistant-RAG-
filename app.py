@@ -8,7 +8,7 @@ from src.rag_pipeline import answer_query
 
 app = Flask(__name__)
 
-# In-memory cache (simple & effective)
+
 DOCUMENT_CHUNKS = []
 DOCUMENT_EMBEDDINGS = None
 
@@ -22,7 +22,7 @@ def home():
 
     if request.method == "POST":
 
-        # ---------- PDF Upload ----------
+        
         if "pdf" in request.files and request.files["pdf"].filename != "":
             try:
                 pdf_file = request.files["pdf"]
@@ -35,7 +35,7 @@ def home():
             except Exception as e:
                 error = str(e)
 
-        # ---------- Question ----------
+        
         if "question" in request.form and DOCUMENT_EMBEDDINGS is not None:
             try:
                 question = request.form["question"]
@@ -57,3 +57,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
